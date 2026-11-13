@@ -1,0 +1,63 @@
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: learndna
+      POSTGRES_PASSWORD: learndna
+      POSTGRES_DB: learndna
+    ports: ["5432:5432"]
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U learndna"]
+      interval: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    ports: ["6379:6379"]
+
+  api:
+    build: ./backend
+    env_file: ./backend/.env.example
+    environment:
+      LEARNDNA_DATABASE_URL: postgresql+psycopg://learndna:learndna@db:5432/learndna
+      LEARNDNA_REDIS_URL: redis://redis:6379/0
+      LEARNDNA_TASK_BACKEND: celery
+      LEARNDNA_JWT_SECRET: dev-only-secret-change-me-0123456789abcdef
+    command: sh -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000"
+    ports: ["8000:8000"]
+    volumes: [uploads:/app/var/uploads]
+    depends_on:
+      db: { condition: service_healthy }
+      redis: { condition: service_started }
+
+  worker:
+    build: ./backend
+    env_file: ./backend/.env.example
+    environment:
+      LEARNDNA_DATABASE_URL: postgresql+psycopg://learndna:learndna@db:5432/learndna
+      LEARNDNA_REDIS_URL: redis://redis:6379/0
+      LEARNDNA_TASK_BACKEND: celery
+      LEARNDNA_JWT_SECRET: dev-only-secret-change-me-0123456789abcdef
+    command: celery -A app.workers.tasks.celery_app worker -Q documents -l info --concurrency 2
+    volumes: [uploads:/app/var/uploads]
+    depends_on: [api, redis]
+
+  web:
+    image: node:22-alpine
+    working_dir: /web
+    command: sh -c "npm ci && npm run build && npm start"
+    environment:
+      LEARNDNA_API_URL: http://api:8000/api/v1
+    ports: ["3000:3000"]
+    volumes: ["./frontend:/web"]
+    depends_on: [api]
+
+  # Optional: malware scanning (set LEARNDNA_MALWARE_SCANNER=clamav, LEARNDNA_CLAMAV_HOST=clamav)
+  # clamav:
+  #   image: clamav/clamav:stable
+  #   ports: ["3310:3310"]
+
+volumes:
+  pgdata:
+  uploads:

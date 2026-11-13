@@ -1,0 +1,42 @@
+# Dependencies & Virtualenvs
+node_modules/
+.venv/
+*/.venv/
+*/node_modules/
+
+# Next.js Build
+.next/
+*/.next/
+*.tsbuildinfo
+next-env.d.ts
+
+# Python bytecode & caches
+__pycache__/
+*/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+*/.pytest_cache/
+.ruff_cache/
+*/.ruff_cache/
+*.egg-info/
+*/.egg-info/
+
+# Local databases & storage
+var/
+*/var/
+*.db
+*.sqlite3
+
+# Environment variables
+.env
+.env.local
+*.env
+*/.env
+*/.env.local
+
+# OS files
+.DS_Store
+*/.DS_Store
+Thumbs.db
