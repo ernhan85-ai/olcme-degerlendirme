@@ -40,3 +40,5 @@ var/
 .DS_Store
 */.DS_Store
 Thumbs.db
+.vercel
+*/.vercel
