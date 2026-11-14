@@ -35,17 +35,27 @@ export default function AnalysisPage() {
   const unreadable = r.review_reason?.includes(UNREADABLE) || (!r.steps.length && r.final_answer === null);
 
   return (
-    <div className="mx-auto max-w-[1500px]">
-      <Link href={`/ogretmen/sinavlar/${r.exam_id}`} className="text-sm text-muted hover:text-ink">← {r.exam_title}</Link>
-      <div className="mt-2 flex flex-wrap items-center gap-3">
-        <h1 className="font-display text-3xl">{r.student.full_name} · {r.question.position}. soru</h1>
-        {r.provider_is_mock && <MockBadge />}
-        {r.transcription_source === "teacher" && <Badge tone="info">Öğretmen transkripsiyonu</Badge>}
+    <div className="mx-auto max-w-[1500px] space-y-6">
+      <div>
+        <Link href={`/ogretmen/sinavlar/${r.exam_id}`} className="text-sm font-semibold text-indigo-600 hover:text-indigo-800 transition-colors inline-flex items-center gap-1.5 mb-2">
+          <span>←</span> {r.exam_title} Sınavına Dön
+        </Link>
+        <div className="flex flex-wrap items-center gap-3">
+          <h1 className="font-display text-3xl sm:text-4xl font-extrabold text-slate-900 leading-tight">
+            {r.student.full_name} · {r.question.position}. Soru Çözümü
+          </h1>
+          {r.provider_is_mock && <MockBadge />}
+          {r.transcription_source === "teacher" && <Badge tone="info">Öğretmen transkripsiyonu</Badge>}
+        </div>
+        <p className="mt-2 max-w-4xl text-base text-slate-600 leading-relaxed font-medium bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+          <strong className="text-slate-900">Soru Metni:</strong> {r.question.stem_text}
+        </p>
       </div>
-      <p className="mt-1 max-w-3xl text-sm text-ink-soft">{r.question.stem_text}</p>
 
       {unreadable && (
-        <div role="alert" className="mt-4 rounded-xl border border-warn/40 bg-warn-soft px-4 py-3 text-sm font-medium text-warn">{UNREADABLE}</div>
+        <div role="alert" className="rounded-2xl border border-amber-300 bg-amber-50 p-4 text-sm font-medium text-amber-900 shadow-2xs">
+          {UNREADABLE}
+        </div>
       )}
 
       <div className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)_minmax(0,1fr)]">
@@ -81,7 +91,14 @@ export default function AnalysisPage() {
 }
 
 function PanelTitle({ n, title }: { n: string; title: string }) {
-  return <p className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted"><span className="grid h-5 w-5 place-items-center rounded-full bg-ink text-[10px] text-white">{n}</span>{title}</p>;
+  return (
+    <p className="mb-4 flex items-center gap-2.5 text-xs font-bold uppercase tracking-wider text-slate-700">
+      <span className="grid h-6 w-6 place-items-center rounded-lg bg-indigo-600 text-xs font-black text-white shadow-2xs">
+        {n}
+      </span>
+      {title}
+    </p>
+  );
 }
 
 // ---------------------------------------------------------------- steps

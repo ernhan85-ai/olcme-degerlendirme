@@ -34,34 +34,55 @@ function ExamPage() {
   const published = exam.status === "published";
 
   return (
-    <div className="mx-auto max-w-6xl">
-      <Link href="/ogretmen/sinavlar" className="text-sm text-muted hover:text-ink">← Sınavlar</Link>
-      <div className="mt-2 flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <h1 className="font-display text-4xl leading-tight">{exam.title}</h1>
-          <p className="mt-1 text-sm text-muted">
-            {exam.subject_name} · {exam.grade_level}. sınıf · {trDate(exam.exam_date)} · {exam.question_count} soru · <Badge tone={published ? "ok" : "warn"}>{EXAM_STATUS_TR[exam.status]}</Badge>
-          </p>
+    <div className="mx-auto max-w-6xl space-y-8">
+      <div>
+        <Link href="/ogretmen/sinavlar" className="text-sm font-semibold text-indigo-600 hover:text-indigo-800 transition-colors inline-flex items-center gap-1.5 mb-3">
+          <span>←</span> Sınavlar Listesine Dön
+        </Link>
+        <div className="flex flex-wrap items-center justify-between gap-5 pb-4 border-b border-slate-200">
+          <div>
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-xs font-bold text-indigo-700 bg-indigo-50 border border-indigo-200 rounded-lg px-2.5 py-1">
+                {exam.subject_name} • {exam.grade_level}. Sınıf
+              </span>
+              <Badge tone={published ? "ok" : "warn"}>{EXAM_STATUS_TR[exam.status]}</Badge>
+            </div>
+            <h1 className="font-display text-3xl sm:text-4xl font-extrabold text-slate-900 leading-tight">
+              {exam.title}
+            </h1>
+            <p className="mt-2 text-sm sm:text-base text-slate-500 font-medium">
+              Sınav Tarihi: <span className="text-slate-800 font-semibold">{trDate(exam.exam_date)}</span> · Toplam <span className="text-slate-800 font-semibold">{exam.question_count} soru</span>
+            </p>
+          </div>
+          <Button
+            variant="hero"
+            onClick={() => setUploadOpen(true)}
+            disabled={!published}
+            className="py-3 px-5 text-sm shadow-sm"
+            title={published ? undefined : "Önce cevap anahtarını doğrulayıp sınavı yayımlayın"}
+          >
+            <span className="text-base font-bold">+</span> Yeni Öğrenci Kâğıdı Yükle
+          </Button>
         </div>
-        <Button variant="hero" onClick={() => setUploadOpen(true)} disabled={!published}
-          title={published ? undefined : "Önce cevap anahtarını doğrulayıp sınavı yayımlayın"}>
-          ⇪ Yeni Öğrenci Yükle
-        </Button>
       </div>
 
-      <div className="mt-8">
-        <Tabs value={tab} onChange={setTab} items={[
-          { id: "papers", label: "Öğrenci kâğıtları", count: exam.submission_count },
-          { id: "questions", label: "Sorular ve cevap anahtarı", count: exam.question_count },
-          { id: "items", label: "Madde analizi" },
-          { id: "outcomes", label: "Kazanım raporu" },
-        ]} />
-      </div>
-      <div className="mt-6">
-        {tab === "papers" && <Papers examId={id} published={published} onOpenUpload={() => setUploadOpen(true)} />}
-        {tab === "questions" && <Questions exam={exam} onChange={setExam} />}
-        {tab === "items" && <Items examId={id} exam={exam} />}
-        {tab === "outcomes" && <Outcomes examId={id} />}
+      <div>
+        <Tabs
+          value={tab}
+          onChange={setTab}
+          items={[
+            { id: "papers", label: "Öğrenci Kâğıtları", count: exam.submission_count },
+            { id: "questions", label: "Sorular ve Cevap Anahtarı", count: exam.question_count },
+            { id: "items", label: "Madde Analizi (Psikometri)" },
+            { id: "outcomes", label: "MEB Kazanım Raporu" },
+          ]}
+        />
+        <div className="mt-6">
+          {tab === "papers" && <Papers examId={id} published={published} onOpenUpload={() => setUploadOpen(true)} />}
+          {tab === "questions" && <Questions exam={exam} onChange={setExam} />}
+          {tab === "items" && <Items examId={id} exam={exam} />}
+          {tab === "outcomes" && <Outcomes examId={id} />}
+        </div>
       </div>
       <UploadModal examId={id} open={uploadOpen} onClose={() => setUploadOpen(false)} onDone={() => { load(); window.dispatchEvent(new Event("ldna:refresh")); }} />
     </div>

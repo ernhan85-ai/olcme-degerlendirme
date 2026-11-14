@@ -6,7 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { api } from "@/lib/api";
 import { EXAM_STATUS_TR, trDate } from "@/lib/labels";
 import type { Exam, ExamStatus, Lookups } from "@/lib/types";
-import { Badge, Button, Card, EmptyState, ErrorState, Loading, inputCls } from "@/components/ui";
+import { Badge, Button, EmptyState, ErrorState, Loading, inputCls } from "@/components/ui";
 
 const statusTone: Record<ExamStatus, "neutral" | "ok" | "warn" | "info"> = {
   draft: "neutral",
@@ -46,50 +46,50 @@ function ExamList() {
   );
 
   return (
-    <div className="space-y-6">
-      {/* Top CRM Title & Action Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div className="space-y-8">
+      {/* Top Banner / Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5 pb-2 border-b border-slate-200/80">
         <div>
-          <div className="inline-flex items-center gap-1.5 rounded-full border border-indigo-200 bg-indigo-50 px-2.5 py-0.5 text-[11px] font-bold text-indigo-700 mb-1.5">
-            <span className="h-1.5 w-1.5 rounded-full bg-indigo-600 animate-pulse" />
-            ÖLÇME YÖNETİMİ • AKTİF DÖNEM
+          <div className="inline-flex items-center gap-2 rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1 text-xs font-bold text-indigo-700 mb-2 shadow-2xs">
+            <span className="h-2 w-2 rounded-full bg-indigo-600 animate-pulse" />
+            ÖLÇME VE DEĞERLENDİRME PORTALI • 2026 GÜZ
           </div>
-          <h1 className="font-display text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
+          <h1 className="font-display text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900">
             Sınav & Değerlendirme Yönetimi
           </h1>
-          <p className="mt-1 text-xs text-slate-500">
-            Ölçme sınavlarınızı oluşturun, öğrenci çözüm kâğıtlarını yükleyin ve psikometrik analizleri takip edin.
+          <p className="mt-2 text-sm sm:text-base text-slate-600 leading-relaxed max-w-2xl">
+            Sınavlarınızı oluşturun, öğrenci el yazısı kâğıtlarını yükleyin, yapay zekâ bilişsel hata muhakemelerini onaylayın ve psikometrik madde analizlerini inceleyin.
           </p>
         </div>
-        <Link href="/ogretmen/sinavlar/yeni">
-          <Button variant="hero" className="py-2 px-4 shadow-sm text-xs">
-            <span className="text-sm font-bold">+</span> Yeni Sınav Tanımla
+        <Link href="/ogretmen/sinavlar/yeni" className="shrink-0">
+          <Button variant="hero" className="py-3 px-5 text-sm shadow-sm">
+            <span className="text-base font-bold">+</span> Yeni Sınav Tanımla
           </Button>
         </Link>
       </div>
 
       {uploadMode && (
-        <div className="rounded-xl border border-indigo-200 bg-indigo-50/70 p-3.5 text-xs text-indigo-950 flex items-center justify-between gap-3 shadow-2xs">
-          <div className="flex items-center gap-2.5">
-            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white font-bold text-xs">
+        <div className="rounded-2xl border border-indigo-200 bg-indigo-50/80 p-5 text-sm text-indigo-950 flex items-center justify-between gap-4 shadow-xs">
+          <div className="flex items-center gap-3.5">
+            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-600 text-white font-bold text-base shadow-xs">
               ↑
             </span>
             <div>
-              <p className="font-bold text-slate-900">Öğrenci Kâğıdı Yükleme Modu</p>
-              <p className="text-slate-600">Öğrenci kâğıdı yüklemek için lütfen aşağıdan yayımlanmış sınavı seçin.</p>
+              <p className="font-bold text-base text-slate-900">Öğrenci Kâğıdı Yükleme Modu</p>
+              <p className="text-slate-600 text-sm">Öğrenci el yazısı kâğıtlarını taramak ve işlemek için aşağıdaki yayımlanmış sınavı seçin.</p>
             </div>
           </div>
           <Link href="/ogretmen/sinavlar">
-            <button className="text-indigo-700 font-semibold hover:underline text-xs cursor-pointer">
-              Filtreyi Temizle
+            <button className="text-indigo-700 font-bold hover:underline text-sm cursor-pointer whitespace-nowrap">
+              Filtreyi Temizle ✕
             </button>
           </Link>
         </div>
       )}
 
-      {/* CRM Filter Bar */}
-      <div className="rounded-xl border border-slate-200/80 bg-white p-3 shadow-2xs">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+      {/* Filter Bar */}
+      <div className="rounded-2xl border border-slate-200/90 bg-white p-4 sm:p-5 shadow-xs">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
           <select
             aria-label="Sınıf düzeyi"
             className={inputCls}
@@ -145,7 +145,7 @@ function ExamList() {
         </div>
       </div>
 
-      {/* CRM Exam Cards */}
+      {/* Exam Cards Grid */}
       <div>
         {err ? (
           <ErrorState message={err} onRetry={load} />
@@ -162,58 +162,58 @@ function ExamList() {
             }
           />
         ) : (
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid gap-6 md:grid-cols-2">
             {exams.map((e) => (
               <Link
                 key={e.id}
                 href={`/ogretmen/sinavlar/${e.id}${uploadMode ? "?yukle=1" : ""}`}
                 className="group block h-full"
               >
-                <div className="h-full rounded-xl border border-slate-200/90 bg-white p-5 shadow-2xs hover:border-indigo-400 hover:shadow-xs transition-all duration-150 flex flex-col justify-between">
+                <div className="h-full rounded-2xl border border-slate-200/90 bg-white p-6 shadow-xs hover:border-indigo-400 hover:shadow-md transition-all duration-200 flex flex-col justify-between">
                   <div>
-                    <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-start justify-between gap-4">
                       <div>
-                        <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-indigo-700 bg-indigo-50 border border-indigo-200/60 rounded px-2 py-0.5 mb-2">
+                        <span className="inline-flex items-center gap-2 text-xs font-bold text-indigo-700 bg-indigo-50 border border-indigo-200/80 rounded-lg px-2.5 py-1 mb-3">
                           <span>{e.subject_name}</span>
                           <span>•</span>
                           <span>{e.grade_level}. Sınıf</span>
                         </span>
-                        <h2 className="font-bold text-base text-slate-900 group-hover:text-indigo-600 transition-colors leading-snug">
+                        <h2 className="font-bold text-xl text-slate-900 group-hover:text-indigo-600 transition-colors leading-snug">
                           {e.title}
                         </h2>
                       </div>
                       <Badge tone={statusTone[e.status]}>{EXAM_STATUS_TR[e.status]}</Badge>
                     </div>
 
-                    <p className="mt-2 text-xs text-slate-500">
-                      Sınav Tarihi: {trDate(e.exam_date)}
+                    <p className="mt-3 text-sm text-slate-500 font-medium">
+                      Sınav Tarihi: <span className="text-slate-800">{trDate(e.exam_date)}</span>
                     </p>
                   </div>
 
-                  <div className="mt-5 grid grid-cols-3 gap-2 pt-3 border-t border-slate-100">
-                    <div className="rounded-lg bg-slate-50 p-2 text-center border border-slate-100">
-                      <p className="text-base font-black text-slate-900 tabular-nums">
+                  <div className="mt-6 grid grid-cols-3 gap-3 pt-4 border-t border-slate-100">
+                    <div className="rounded-xl bg-slate-50 p-3 text-center border border-slate-200/60">
+                      <p className="text-xl font-black text-slate-900 tabular-nums">
                         {e.question_count}
                       </p>
-                      <p className="text-[10px] font-semibold uppercase text-slate-400">Soru</p>
+                      <p className="text-xs font-semibold uppercase text-slate-500 mt-0.5">Soru</p>
                     </div>
-                    <div className="rounded-lg bg-slate-50 p-2 text-center border border-slate-100">
-                      <p className="text-base font-black text-slate-900 tabular-nums">
+                    <div className="rounded-xl bg-slate-50 p-3 text-center border border-slate-200/60">
+                      <p className="text-xl font-black text-slate-900 tabular-nums">
                         {e.submission_count}
                       </p>
-                      <p className="text-[10px] font-semibold uppercase text-slate-400">Öğrenci</p>
+                      <p className="text-xs font-semibold uppercase text-slate-500 mt-0.5">Öğrenci</p>
                     </div>
                     <div
-                      className={`rounded-lg p-2 text-center border ${
+                      className={`rounded-xl p-3 text-center border ${
                         e.pending_review_count > 0
-                          ? "bg-amber-50/80 border-amber-200 text-amber-900"
-                          : "bg-slate-50 border-slate-100 text-slate-900"
+                          ? "bg-amber-50/90 border-amber-300 text-amber-900 shadow-2xs"
+                          : "bg-slate-50 border-slate-200/60 text-slate-900"
                       }`}
                     >
-                      <p className="text-base font-black tabular-nums">
+                      <p className="text-xl font-black tabular-nums">
                         {e.pending_review_count}
                       </p>
-                      <p className="text-[10px] font-semibold uppercase opacity-75">İnceleme</p>
+                      <p className="text-xs font-bold uppercase opacity-85 mt-0.5">İnceleme</p>
                     </div>
                   </div>
                 </div>
@@ -226,9 +226,9 @@ function ExamList() {
   );
 }
 
-export default function Page() {
+export default function ExamsPage() {
   return (
-    <Suspense fallback={<Loading label="Sınav paneli hazırlanıyor..." />}>
+    <Suspense fallback={<Loading label="Sınavlar yükleniyor..." />}>
       <ExamList />
     </Suspense>
   );
